@@ -158,7 +158,12 @@ document.addEventListener('DOMContentLoaded', function() {
             appCard.innerHTML = `
                 ${app.badge ? `<div class="app-badge">${app.badge === 'new' ? 'NEW' : 'HOT'}</div>` : ''}
                 <img src="${app.image}" alt="${app.name}" class="app-icon">
-                <!-- Rest of your card HTML -->
+                <h3>${app.name}</h3>
+                <div class="app-info">
+                    <span class="app-bonus">Bonus: ${app.bonus}</span>
+                    <span class="app-withdrawal">Min. Withdrawal: ${app.withdrawal}</span>
+                </div>
+                <button class="download-btn" data-link="${app.link}">Download Now</button>
             `;
             appContainer.appendChild(appCard);
         });
