@@ -141,18 +141,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
 
-    // [Rest of your existing JavaScript code remains exactly the same]
-    // Filter buttons, search functionality, etc.
-    // ...
+    // Function to render top 3 apps
+    function renderTopThreeApps() {
+        const topThreeContainer = document.getElementById('topThreeContainer');
+        if (!topThreeContainer) return;
 
-    // In your filterApps function, make sure the image is used like this:
+        const topThreeApps = apps.filter(app => app.featured).slice(0, 3);
+        
+        topThreeContainer.innerHTML = topThreeApps.map((app, index) => `
+            <div class="top-three-card ${index === 0 ? 'first' : index === 1 ? 'second' : 'third'}">
+                <img src="${app.image}" alt="${app.name}" class="app-icon">
+                <h3>${app.name}</h3>
+                <div class="app-info">
+                    <span class="app-bonus">Bonus: ${app.bonus}</span>
+                    <span class="app-withdrawal">Min. Withdrawal: ${app.withdrawal}</span>
+                </div>
+                <button class="download-btn" data-link="${app.link}">Download Now</button>
+            </div>
+        `).join('');
+    }
+
+    // Function to filter and display apps
     function filterApps(filter, searchTerm = '') {
         const appContainer = document.getElementById('appContainer');
+        if (!appContainer) return;
+
         appContainer.innerHTML = '';
         
-        apps.forEach((app, index) => {
-            // [Your existing filter logic...]
-            
+        const filteredApps = apps.filter(app => {
+            const matchesFilter = filter === 'all' || app.tag === filter;
+            const matchesSearch = !searchTerm || 
+                app.name.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesFilter && matchesSearch;
+        });
+        
+        filteredApps.forEach(app => {
             const appCard = document.createElement('div');
             appCard.className = 'app-card';
             appCard.innerHTML = `
@@ -170,13 +193,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Initialize everything
+    renderTopThreeApps();
     filterApps('all');
 
-    // Handle download button clicks
+    // Handle download button clicks for both top 3 and regular app cards
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('download-btn')) {
             const link = e.target.getAttribute('data-link');
             if (link) window.open(link, '_blank');
         }
+    });
+
+    // Handle search functionality
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            filterApps('all', e.target.value);
+        });
+    }
+
+    // Handle filter buttons
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            filterApps(this.getAttribute('data-filter'));
+        });
     });
 });
